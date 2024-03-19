@@ -1,0 +1,17 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for my video Streaming Platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Javascript",
+    "Typescript",
+    "Node",
+    "Js"
+  ],
+  "author": "SAGAR SINGH",
+  "license": "ISC"
+}
