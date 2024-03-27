@@ -1,13 +1,27 @@
 import dotenv from "dotenv";
-import express from "express";
-import connectDB from "./db/db.js";
-
 dotenv.config({
   path: "./.env",
 });
-const app = express();
+import app from "./app.js";
+import connectDB from "./db/db.js";
 
-connectDB();
+connectDB()
+  .then(() => {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+    app.on("error", (error) => {
+      console.error(
+        `Mongo Db connection Failed at PORT LEVEL: ${error.message}`
+      );
+      throw error;
+    });
+  })
+  .catch((error) => {
+    console.error(`Mongo Db connection Failed : ${error.message}`);
+    process.exit(1);
+  });
 /*
 //Approach 1 Using ifii function
 (async () => {
