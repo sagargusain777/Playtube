@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    fullname: {
+    fullName: {
       type: String,
       required: true,
       trim: true,
@@ -47,5 +47,51 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+//Encrypting the password in database
+userSchema.pre("save", async function (next) {
+  try {
+    if (!this.ismodified("password")) {
+      return next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = bcyrpt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+//Method to  validate the password
+userSchema.methods.comparePassword = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+      fullName: this.fullName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
 
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
 export const User = mongoose.model("User", userSchema);
